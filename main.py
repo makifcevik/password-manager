@@ -102,6 +102,7 @@ def find_password():
             user_info = data[website]["email/username"]
             user_password = data[website]["password"]
             messagebox.showinfo(title="Info", message=f"mail/username: {user_info}\npassword: {user_password}")
+            pyperclip.copy(user_password)
         else:
             show_no_record_error()
 

@@ -29,7 +29,7 @@ def generate_password():
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save():
-    website = entry_website.get()
+    website = entry_website.get().title()
     username = entry_username.get()
     password = entry_password.get()
     new_data = {
@@ -45,10 +45,8 @@ def save():
         return
 
     # save confirmation
-    is_ok = messagebox.askokcancel(title="Save Confirmation", message=f"Details entered:\n"
-                                                                      f"Email/Username: {username}\n"
-                                                                      f"Password: {password}\n"
-                                                                      f"Do you want to save?")
+    confirmation_message = f"Details entered:\nEmail/Username: {username}\nPassword: {password}\nDo you want to save?"
+    is_ok = messagebox.askokcancel(title="Save Confirmation", message=confirmation_message)
 
     # save if confirmed
     if is_ok:
@@ -79,6 +77,35 @@ def clear():
     entry_password.delete(0, END)
 
 
+# ---------------------------- FIND PASSWORD ------------------------------- #
+
+
+def find_password():
+
+    def show_no_record_error():
+        messagebox.showerror(title="Error", message="No such record")
+
+    try:
+        with open("data.json", mode="r") as data_file:
+            try:
+                data = json.load(data_file)
+            except json.decoder.JSONDecodeError:
+                show_no_record_error()
+
+    except FileNotFoundError:
+        open("data.json", mode="w").close()
+        show_no_record_error()
+
+    else:
+        website = entry_website.get().title()
+        if website in data:
+            user_info = data[website]["email/username"]
+            user_password = data[website]["password"]
+            messagebox.showinfo(title="Info", message=f"mail/username: {user_info}\npassword: {user_password}")
+        else:
+            show_no_record_error()
+
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -94,7 +121,7 @@ canvas.grid(column=1, row=0)
 label_website = Label(text="Website: ")
 label_website.grid(column=0, row=1, sticky="E")
 entry_website = Entry(width=35)
-entry_website.grid(column=1, row=1, columnspan=2, sticky="EW")
+entry_website.grid(column=1, row=1, sticky="EW")
 entry_website.focus()
 
 # email/username
@@ -111,8 +138,12 @@ entry_password.grid(column=1, row=3, sticky="EW")
 button_generate = Button(text="Generate Password", command=generate_password)
 button_generate.grid(column=2, row=3, sticky="EW")
 
-# add
+# add button
 button_add = Button(text="Add", command=save)
 button_add.grid(column=1, row=4, columnspan=2, sticky="EW")
+
+# search button
+button_search = Button(text="Search", command=find_password)
+button_search.grid(column=2, row=1, sticky="EW")
 
 window.mainloop()

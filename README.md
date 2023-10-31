@@ -1,4 +1,4 @@
-# Project Title
+# Password Manager
 
 This is an application built by using python tkinter module mainly. Password manager helps you store your information so you will always have a backup incase you forget them!
 
